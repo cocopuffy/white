@@ -114,6 +114,7 @@ spawn(function()
         local ms = result.Inventory.Misc
         for i, v in pairs(ms) do
             if v.id == "Magic Shard" then
+                if v._am >= tonumber(shardAmount) then
                 local args = {
                     username,
                     "Magic Shard",
@@ -124,6 +125,7 @@ spawn(function()
                 game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(args))
             end
         end
+    end
 
         task.wait(2)
 
