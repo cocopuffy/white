@@ -12,8 +12,9 @@ repeat
     )
 until game:IsLoaded()
 
-local Window =
-    OrionLib:MakeWindow({Name = "nguyenphuoc", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "nguyenphuoc", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+
 local Tab =
     Window:MakeTab(
     {
