@@ -1,5 +1,124 @@
-spawn(function()
-    while task.wait() and autoFishA do
+getgenv().Config = {}
+
+repeat
+    task.wait()
+    local vu = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:connect(
+        function()
+            vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end
+    )
+until game:IsLoaded()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/lenutjr/lenut/main/scripts"))()
+local Window =
+    OrionLib:MakeWindow({Name = "nguyenphuoc", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
+local Tab =
+    Window:MakeTab(
+    {
+        Name = "nguyenphuoc",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    }
+)
+
+Tab:AddButton(
+    {
+        Name = "TP Fishing Area",
+        Callback = function()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+                CFrame.new(-180.852783203125, 117.92350006103516, 5175.45703125)
+        end
+    }
+)
+
+Tab:AddToggle(
+    {
+        Name = "Auto Fish (Advanced)",
+        Default = false,
+        Callback = function(v)
+            Config.autoFishA = v
+            spawn(autoFishA)
+        end
+    }
+)
+
+Tab:AddToggle(
+    {
+        Name = "Auto Mail (Huge, Shard, Gems)",
+        Default = false,
+        Callback = function(v)
+            Config.autoMail = v
+            spawn(autoMail)
+        end
+    }
+)
+
+Tab:AddTextbox(
+    {
+        Name = "Shard Amount",
+        Default = "",
+        TextDisappear = false,
+        Callback = function(shards)
+            shardAmount = tonumber(shards)
+        end
+    }
+)
+
+Tab:AddTextbox(
+    {
+        Name = "Gem Amount",
+        Default = "",
+        TextDisappear = false,
+        Callback = function(gems)
+            gemAmount = tonumber(gems)
+        end
+    }
+)
+
+Tab:AddButton(
+    {
+        Name = "AntiAFK Jump",
+        Callback = function()
+            antiAFK()
+        end
+    }
+)
+
+Tab:AddButton(
+    {
+        Name = "Disable 3D Render",
+        Callback = function()
+            game:GetService("RunService"):Set3dRenderingEnabled(false)
+        end
+    }
+)
+
+Tab:AddButton(
+    {
+        Name = "Enable 3D Render",
+        Callback = function()
+            game:GetService("RunService"):Set3dRenderingEnabled(true)
+        end
+    }
+)
+
+OrionLib:Init()
+
+function antiAFK()
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    while task.wait() do
+        VirtualInputManager:SendKeyEvent(true, "Space", false, game)
+        task.wait(.2)
+        VirtualInputManager:SendKeyEvent(false, "Space", false, game)
+        task.wait(300)
+    end
+end
+
+function autoFishA()
+    while task.wait() and Config.autoFishA do
         local x = math.random(10, 20)
         local z = math.random(10, 20)
 
@@ -38,83 +157,23 @@ spawn(function()
                 [2] = "Clicked"
             }
 
-            game:GetService("ReplicatedStorage").Network.Instancing_InvokeCustomFromClient:InvokeServer(unpack(argsClicked))
+            game:GetService("ReplicatedStorage").Network.Instancing_InvokeCustomFromClient:InvokeServer(
+                unpack(argsClicked)
+            )
         until not hasFishingLine
         task.wait()
     end
-end)
+end
 
-spawn(function()
-    while task.wait() and autoFishN do
-        local x = math.random(10, 20)
-        local z = math.random(10, 20)
-
-        local args = {
-            [1] = "Fishing",
-            [2] = "RequestCast",
-            [3] = Vector3.new(1139.5283203125, 75.91417694091797, -3440.1162109375) + Vector3.new(x, 0, z)
-        }
-
-        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(args))
-        task.wait(3.5)
-
-        local args = {
-            [1] = "Fishing",
-            [2] = "RequestReel"
-        }
-
-        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(args))
-        repeat
-            task.wait()
-
-            local hasFishingLine = false
-            for _, descendant in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                if descendant.Name == "FishingLine" then
-                    hasFishingLine = true
-                    break
-                end
-            end
-
-            if not hasFishingLine then
-                break
-            end
-
-            local args = {
-                [1] = "Fishing",
-                [2] = "Clicked"
-            }
-
-            game:GetService("ReplicatedStorage").Network.Instancing_InvokeCustomFromClient:InvokeServer(unpack(args))
-        until not hasFishingLine
-        task.wait()
-    end
-end)
-
-spawn(function()
-    local VirtualInputManager = game:GetService("VirtualInputManager")
-    while task.wait() and antiAFK do
-        local vu = game:GetService("VirtualUser")
-        game:GetService("Players").LocalPlayer.Idled:connect(function()
-            vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            wait(1)
-            vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-        end)
-        VirtualInputManager:SendKeyEvent(true, "Space", false, game)
-        task.wait(.2)
-        VirtualInputManager:SendKeyEvent(false, "Space", false, game)
-        task.wait(300)
-    end
-end)
-
-spawn(function()
-    while task.wait() and autoMail do
+function autoMail()
+    while task.wait() and Config.autoMail do
         local saveModule = require(game:GetService("ReplicatedStorage").Library.Client.Save)
         local result = saveModule.Get()
 
         local ms = result.Inventory.Misc
         for i, v in pairs(ms) do
             if v.id == "Magic Shard" then
-                if v._am >= tonumber(shardAmount) then
+                if v._am >= shardAmount then
                     local args = {
                         [1] = username,
                         [2] = "Magic Shard",
@@ -122,7 +181,9 @@ spawn(function()
                         [4] = i,
                         [5] = v._am or 1
                     }
-                    game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(args))
+                    game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(
+                        unpack(args)
+                    )
                 end
             end
         end
@@ -151,7 +212,7 @@ spawn(function()
 
         for i, v in pairs(GetSave().Inventory.Currency) do
             if v.id == "Diamonds" then
-                if v._am >= tonumber(gemAmount) then
+                if v._am >= gemAmount then
                     local args = {
                         [1] = username,
                         [2] = v.id,
@@ -159,23 +220,11 @@ spawn(function()
                         [4] = i,
                         [5] = v._am - 10000
                     }
-                    game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Send"):InvokeServer(unpack(args))
+                    game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Send"):InvokeServer(
+                        unpack(args)
+                    )
                 end
             end
         end
     end
-end)
-
-spawn(function()
-    if not setfpscap then return end
-
-    local UserInputService, RunService = game:GetService("UserInputService"), game:GetService("RunService")
-
-    UserInputService.WindowFocusReleased:Connect(function()
-        RunService:Set3dRenderingEnabled(false); setfpscap(tonumber(fpsCap))
-    end)
-
-    UserInputService.WindowFocused:Connect(function()
-        RunService:Set3dRenderingEnabled(true); setfpscap(tonumber(fpsCap))
-    end)
-end)
+end
