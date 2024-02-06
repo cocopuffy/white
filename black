@@ -1,17 +1,5 @@
 getgenv().Config = {}
 
-repeat
-    task.wait()
-    local vu = game:GetService("VirtualUser")
-    game:GetService("Players").LocalPlayer.Idled:connect(
-        function()
-            vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-            wait(1)
-            vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-        end
-    )
-until game:IsLoaded()
-
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local Window = OrionLib:MakeWindow({Name = "nguyenphuoc", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
 
@@ -100,6 +88,15 @@ Tab:AddButton(
 
 Tab:AddButton(
     {
+        Name = "AntiAFK Normal",
+        Callback = function()
+            antiAFKN()
+        end
+    }
+)
+
+Tab:AddButton(
+    {
         Name = "Disable 3D Render",
         Callback = function()
             game:GetService("RunService"):Set3dRenderingEnabled(false)
@@ -126,6 +123,16 @@ function antiAFK()
         VirtualInputManager:SendKeyEvent(false, "Space", false, game)
         task.wait(300)
     end
+end
+
+function antiAFKN()
+    local vu = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:connect(
+        function()
+            vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
 end
 
 function autoFishA()
