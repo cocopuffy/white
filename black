@@ -12,7 +12,6 @@ repeat
     )
 until game:IsLoaded()
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/lenutjr/lenut/main/scripts"))()
 local Window =
     OrionLib:MakeWindow({Name = "nguyenphuoc", HidePremium = false, SaveConfig = false, ConfigFolder = "OrionTest"})
 local Tab =
